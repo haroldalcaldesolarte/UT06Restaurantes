@@ -259,6 +259,95 @@ class ManagerView {
     this.aside.innerHTML = `<h5>Platos</h5><ul>${asideContent}</ul>`;
   }
 
+  showNewDishForm(categories, allergens){
+    this.main.replaceChildren();
+    this.aside.style.width = '20%';
+
+    const container = document.createElement('div');
+    container.classList.add('container');
+    container.classList.add('my-3');
+    container.id = 'new-category';
+
+    container.insertAdjacentHTML(
+      'afterbegin',
+      '<h1 class="display-5">Nuevo Plato</h1>',
+    );
+    container.insertAdjacentHTML(
+      'beforeend',
+      `<form name="fNewDish" role="form" class="row g-3" novalidate>
+			<div class="col-md-6 mb-3">
+				<label class="form-label" for="ncNombre">Nombre *</label>
+				<div class="input-group">
+					<input type="text" class="form-control" id="ncTitle" name="ncTitle"
+						placeholder="Nombre del plato" value="" required>
+					<div class="invalid-feedback">El nombre es obligatorio.</div>
+					<div class="valid-feedback">Correcto.</div>
+				</div>
+			</div>
+			<div class="col-md-6 mb-3">
+				<label class="form-label" for="ncUrl">URL de la imagen *</label>
+				<div class="input-group">
+					<input type="url" class="form-control" id="ncUrl" name="ncUrl" placeholder="URL de la imagen"
+						value="" required>
+					<div class="invalid-feedback">La URL no es válida.</div>
+					<div class="valid-feedback">Correcto.</div>
+				</div>
+			</div>
+			<div class="col-md-12 mb-3">
+				<label class="form-label" for="ncDescription">Descripción</label>
+				<div class="input-group">
+					<input type="text" class="form-control" id="ncDescription" name="ncDescription" value="">
+					<div class="invalid-feedback"></div>
+					<div class="valid-feedback">Correcto.</div>
+				</div>
+			</div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label" for="ncCategorias">Categorias</label>
+        <div id="categories-checkboxes">
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label" for="ncAlergenos">Alergenos</label>
+        <div id="allergens-checkboxes">
+        </div>
+      </div>
+			<div class="mb-12">
+				<button class="btn btn-primary" type="submit">Enviar</button>
+				<button class="btn btn-primary" type="reset">Cancelar</button>
+			</div>
+		</form>`,
+    );
+    const categoriesCheckboxesContainer = container.querySelector('#categories-checkboxes');
+    categories.forEach(category => {
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.name = 'categories';
+      checkbox.value = category.getName();
+      const label = document.createElement('label');
+      label.textContent = category.getName();
+
+      categoriesCheckboxesContainer.appendChild(checkbox);
+      categoriesCheckboxesContainer.appendChild(label);
+      categoriesCheckboxesContainer.appendChild(document.createElement('br'));
+    });
+
+    const allergensCheckboxesContainer = container.querySelector('#allergens-checkboxes');
+    allergens.forEach(allergen => {
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.name = 'allergens';
+      checkbox.value = allergen.getName();
+      const label = document.createElement('label');
+      label.textContent = allergen.getName();
+
+      allergensCheckboxesContainer.appendChild(checkbox);
+      allergensCheckboxesContainer.appendChild(label);
+      allergensCheckboxesContainer.appendChild(document.createElement('br'));
+    });
+
+    this.main.append(container);
+  }
+
   bindAllergenDishes(handler){
     document.getElementById('nav-alergenos').addEventListener('click', (event) => {
       handler();
@@ -287,6 +376,12 @@ class ManagerView {
         handler(event.currentTarget.dataset.name);
       });
     }
+  }
+
+  bindShowNewDish(handler){
+    document.getElementById('btn-add-dish').addEventListener('click', (event) => { 
+      handler();
+    });
   }
 
   bindInit(handler){

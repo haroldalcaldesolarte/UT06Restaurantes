@@ -80,13 +80,18 @@
         <h1 id="inicio">Gestión de Restaurantes</h1>
     </header>
 
-    <nav>
-        <ul id="navbar-nav">
-            <li><a id="nav-categories" href="#">Categorias</a></li>
-            <li><a id="nav-alergenos" href="#">Alergenos</a></li>
-            <li><a id="nav-menus" href="#">Menus</a></li>
-            <!--<li><a id="nav-restaurants" href="#">Restaurantes</a></li> -->
-        </ul>
+    <nav class="d-flex flex-row">
+      <button id="btn-add-dish" type="button" class="btn btn-sm btn-success"><i class="fa fa-plus"></i> Plato</button>
+      <button id="btn-remove-dish" type="button" class="btn btn-sm btn-danger"><i class="fa fa-minus"></i> Plato</button>
+      <button id="btn-add-cat" type="button" class="btn btn-sm btn-success"><i class="fa fa-plus"></i> Categoria</button>
+      <button id="btn-remove-cat" type="button" class="btn btn-sm btn-danger"><i class="fa fa-minus"></i> Categoria</button>
+      <button id="btn-add-restaurant" type="button" class="btn btn-sm btn-success"><i class="fa fa-plus"></i> Restaurante</button>
+
+      <ul id="navbar-nav">
+        <li><a id="nav-categories" href="#">Categorias</a></li>
+        <li><a id="nav-alergenos" href="#">Alergenos</a></li>
+        <li><a id="nav-menus" href="#">Menus</a></li>
+      </ul>
     </nav>
 
     <div class="container">

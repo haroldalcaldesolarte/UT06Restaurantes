@@ -5,12 +5,12 @@ class ManagerController{
   constructor(modelManager, viewManager){
     this[MODEL] = modelManager;
     this[VIEW] = viewManager;
-
     this[VIEW].bindInit(this.handleInit); //dar funcionalidad a un elemento HTML
   }
 
   onInit = () => {
     this[VIEW].init(this[MODEL].categories, this[MODEL].dishes);
+    this[VIEW].bindShowNewDish(this.handleNewDishForm);
     this[VIEW].showRestaurantsInMenu(this[MODEL].restaurants);
     this[VIEW].bindShowHideOptionRestaurants(this.handleShowOptionRestaurants);
     this[VIEW].bindShowRestaurant(this.handleShowRestaurant);
@@ -78,6 +78,11 @@ class ManagerController{
     const menu = this[MODEL].menus.find(menu => menu.menu.name === MenuName);
     this[VIEW].listDishesMenu(menu.dishes, menu.menu.name);
     this[VIEW].bindShowDish(this.handleShowDish);
+  }
+
+  handleNewDishForm = () => {
+    this[VIEW].showNewDishForm(this[MODEL].categories, this[MODEL].allergens);
+    //this[VIEW].bindNewDishCategoryForm(this.handleCreateDish);
   }
 
   onLoad = (categories, allergens, dishes, menus, restaurants) => {
