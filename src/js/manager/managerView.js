@@ -1,4 +1,4 @@
-import { newDishValidation, newCategoryValidation } from './validation.js';
+import { newDishValidation, newCategoryValidation, newRestaurantValidation} from './validation.js';
 
 class ManagerView {
   constructor(){
@@ -338,6 +338,98 @@ class ManagerView {
     messageModalContainer.addEventListener('hidden.bs.modal', listener, { once: true });
   }
 
+  //Formulario restaurante
+  showNewRestaurantForm(){
+    this.main.replaceChildren();
+    this.aside.replaceChildren();
+    this.main.style.width = '80%';
+    this.aside.style.width = '20%';
+
+    const container = document.createElement('div');
+    container.classList.add('container');
+    container.classList.add('my-3');
+    container.id = 'new-restaurant';
+
+    container.insertAdjacentHTML(
+      'afterbegin',
+      '<h1 class="display-5">Nuevo Restaurante</h1>',
+    );
+    container.insertAdjacentHTML(
+      'beforeend',
+      `<form name="fNewRestaurant" role="form" class="row g-3" novalidate>
+			<div class="col-md-12 mb-3">
+				<label class="form-label" for="ncNombre">Nombre *</label>
+				<div class="input-group">
+					<input type="text" class="form-control" id="ncNombre" name="ncNombre"
+						placeholder="Nombre del resturante" value="" required>
+					<div class="invalid-feedback">El nombre es obligatorio.</div>
+					<div class="valid-feedback">Correcto.</div>
+				</div>
+			</div>
+			<div class="col-md-12 mb-3">
+				<label class="form-label" for="ncDescription">Descripción *</label>
+				<div class="input-group">
+					<input type="text" class="form-control" id="ncDescription" name="ncDescription" value="" required>
+					<div class="invalid-feedback">La descripción no es válida.</div>
+					<div class="valid-feedback">Correcto.</div>
+				</div>
+			</div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label" for="ncLatitud">Latitud *</label>
+        <div class="input-group">
+          <input type="number" class="form-control" id="ncLatitud" name="ncLatitud" value="" required>
+          <div class="invalid-feedback">La latitud no es válida.</div>
+          <div class="valid-feedback">Correcto.</div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label" for="ncLongitud">longitud *</label>
+        <div class="input-group">
+          <input type="number" class="form-control" id="ncLongitud" name="ncLongitud" value="" required>
+          <div class="invalid-feedback">La longitud no es válida.</div>
+          <div class="valid-feedback">Correcto.</div>
+        </div>
+      </div>
+			<div class="mb-12">
+				<button class="btn btn-primary" type="submit">Enviar</button>
+				<button class="btn btn-danger" type="reset">Cancelar</button>
+			</div>
+		</form>`,
+    );
+
+    this.main.append(container);
+  }
+
+  bindNewRestaurantForm(handler){
+    newRestaurantValidation(handler);
+  }
+
+  showNewRestaurantModal(done, restaurant, error) {
+    const messageModalContainer = document.getElementById('messageModal');
+    const messageModal = new bootstrap.Modal('#messageModal');
+
+    const title = document.getElementById('messageModalTitle');
+    title.innerHTML = 'Nuevo Restaurante';
+    const body = messageModalContainer.querySelector('.modal-body');
+    body.replaceChildren();
+    if (done) {
+      body.insertAdjacentHTML('afterbegin', `<div class="p-3">El restaurante <strong>${restaurant.name}</strong> ha sido creado correctamente.</div>`);
+    } else {
+      body.insertAdjacentHTML(
+        'afterbegin',
+        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i>El restaurante <strong>${restaurant.name}</strong> ya está creado.</div>`,
+      );
+    }
+    messageModal.show();
+    const listener = (event) => {
+      if (done) {
+        document.fNewRestaurant.reset();
+      }
+      document.fNewRestaurant.ncNombre.focus();
+    };
+    messageModalContainer.addEventListener('hidden.bs.modal', listener, { once: true });
+  }
+
   //Formulario Plato
 
   showNewDishForm(categories, allergens){
@@ -472,6 +564,12 @@ class ManagerView {
 
   bindShowNewCategory(handler){
     document.getElementById('btn-add-cat').addEventListener('click', (event) => { 
+      handler();
+    });
+  }
+
+  bindShowNewRestaurant(handler){
+    document.getElementById('btn-add-restaurant').addEventListener('click', (event) => { 
       handler();
     });
   }

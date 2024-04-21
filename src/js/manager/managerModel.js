@@ -595,6 +595,10 @@ const Manager = (function () {
       return newRestaurant;
     }
 
+    createLocation(latitude,longitude){
+      return new Coordinate(latitude,longitude);
+    }
+
     reset() {
       console.log('reset');
       this.categories.length = 0;

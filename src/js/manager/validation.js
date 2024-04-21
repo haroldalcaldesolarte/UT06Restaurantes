@@ -103,4 +103,56 @@ function newCategoryValidation(handler){
   form.ncDescription.addEventListener('change', defaultCheckElement);
 }
 
-export { newDishValidation, newCategoryValidation };
+function newRestaurantValidation(handler){
+  const form = document.forms.fNewRestaurant;
+  form.setAttribute('novalidate', true);
+  form.addEventListener('submit', function (event) {
+    let isValid = true;
+    let firstInvalidElement = null;
+
+    if (!this.ncLatitud.checkValidity()) {
+      isValid = false;
+      showFeedBack(this.ncLatitud, false);
+      firstInvalidElement = this.ncLatitud;
+    } else {
+      showFeedBack(this.ncLatitud, true);
+    }
+
+    if (!this.ncLongitud.checkValidity()) {
+      isValid = false;
+      showFeedBack(this.ncLongitud, false);
+      firstInvalidElement = this.ncLongitud;
+    } else {
+      showFeedBack(this.ncLongitud, true);
+    }
+
+    if (!this.ncDescription.checkValidity()) {
+      isValid = false;
+      showFeedBack(this.ncDescription, false);
+      firstInvalidElement = this.ncDescription;
+    } else {
+      showFeedBack(this.ncDescription, true);
+    }
+
+    if (!this.ncNombre.checkValidity()) {
+      isValid = false;
+      showFeedBack(this.ncNombre, false);
+      firstInvalidElement = this.ncNombre;
+    } else {
+      showFeedBack(this.ncNombre, true);
+    }
+
+    if (!isValid) {
+      firstInvalidElement.focus();
+    } else {
+      handler(this.ncNombre.value,this.ncDescription.value,this.ncLatitud.value, this.ncLongitud.value);
+    }
+    event.preventDefault();
+    event.stopPropagation();
+  });
+
+  form.ncNombre.addEventListener('change', defaultCheckElement);
+  form.ncDescription.addEventListener('change', defaultCheckElement);
+}
+
+export { newDishValidation, newCategoryValidation, newRestaurantValidation };

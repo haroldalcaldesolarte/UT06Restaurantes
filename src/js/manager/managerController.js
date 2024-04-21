@@ -12,6 +12,7 @@ class ManagerController{
     this[VIEW].init(this[MODEL].categories, this[MODEL].dishes);
     this[VIEW].bindShowNewDish(this.handleNewDishForm);
     this[VIEW].bindShowNewCategory(this.handleNewCategoryForm);
+    this[VIEW].bindShowNewRestaurant(this.handleNewRestaurantForm);
     this[VIEW].showRestaurantsInMenu(this[MODEL].restaurants);
     this[VIEW].bindShowHideOptionRestaurants(this.handleShowOptionRestaurants);
     this[VIEW].bindShowRestaurant(this.handleShowRestaurant);
@@ -93,14 +94,35 @@ class ManagerController{
 
     try{
       category = this[MODEL].createCategory(category_name,category_description);
-      console.log(category);
       done = true;
+    }catch (exception) {
+      done = false;
+      error = exception;
+    }
+    this[VIEW].showNewCategoryModal(done, category, error);
+  }
+
+  handleNewRestaurantForm = () => {
+    this[VIEW].showNewRestaurantForm();
+    this[VIEW].bindNewRestaurantForm(this.handleCreateRestaurant);
+  }
+
+  handleCreateRestaurant = (restaurant_name, restaurant_description, latitude, longitude) => {
+    let done;
+    let error;
+    let restaurant;
+
+    try{
+      const location = this[MODEL].createLocation(latitude, longitude);
+      restaurant = this[MODEL].createRestaurant(restaurant_name,restaurant_description, location);
+      done = true;
+      //Recargar los restaurantes
     }catch (exception) {
       done = false;
       error = exception;
       console.log(exception);
     }
-    this[VIEW].showNewCategoryModal(done, category, error);
+    this[VIEW].showNewRestaurantModal(done, restaurant, error);
   }
 
   handleNewDishForm = () => {
