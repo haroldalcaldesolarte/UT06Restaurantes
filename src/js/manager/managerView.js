@@ -391,11 +391,11 @@ class ManagerView {
     const body = messageModalContainer.querySelector('.modal-body');
     body.replaceChildren();
     if (done) {
-      body.insertAdjacentHTML('afterbegin', `<div class="p-3">La categoría <strong>${cat}</strong> ha sido eliminada correctamente.</div>`);
+      body.insertAdjacentHTML('afterbegin', `<div class="p-3">La categoría <strong>${cat.name}</strong> ha sido eliminada correctamente.</div>`);
     } else {
       body.insertAdjacentHTML(
         'afterbegin',
-        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> La categoría <strong>${cat}</strong> no se ha podido borrar.</div>`,
+        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> La categoría <strong>${cat.name}</strong> no se ha podido borrar.</div>`,
       );
     }
     messageModal.show();
@@ -623,6 +623,77 @@ class ManagerView {
     messageModalContainer.addEventListener('hidden.bs.modal', listener, { once: true });
   }
 
+  //Formulario borrar plato
+  showRemoveDishForm(dishes){
+    this.main.replaceChildren();
+    this.aside.replaceChildren();
+    this.main.style.width = '80%';
+    this.aside.style.width = '20%';
+    
+    if (this.main.children.length > 1) this.main.children[1].remove();
+
+    const container = document.createElement('div');
+    container.classList.add('container');
+    container.classList.add('my-3');
+    container.id = 'remove-dish';
+    container.insertAdjacentHTML(
+      'afterbegin',
+      '<h1 class="display-5">Eliminar un plato</h1>',
+    );
+
+    const row = document.createElement('div');
+    row.classList.add('row');
+
+    for (const dish of dishes) {
+      row.insertAdjacentHTML('beforeend', `<div class="col-lg-3 col-md-6">
+        <div class="cat-list-text">
+          <a data-category="${dish.dish.name}" href="#category-list"><h3>${dish.dish.name}</h3></a>
+					<div>${dish.dish.description}</div>
+        </div>
+				<div><button class="btn btn-primary" data-dish="${dish.dish.name}" type='button'>Eliminar</button></div>
+    </div>`);
+    }
+    container.append(row);
+    this.main.append(container);
+  }
+
+  bindRemoveDishForm(handler){
+    const removeContainer = document.getElementById('remove-dish');
+    const buttons = removeContainer.getElementsByTagName('button');
+    for (const button of buttons) {
+      button.addEventListener('click', function (event) {
+      	handler(this.dataset.dish);
+    	});
+    }
+  }
+
+  showRemoveDishModal(done, dish, error){
+    const messageModalContainer = document.getElementById('messageModal');
+    const messageModal = new bootstrap.Modal('#messageModal');
+
+    const title = document.getElementById('messageModalTitle');
+    title.innerHTML = 'Borrado de categoría';
+    const body = messageModalContainer.querySelector('.modal-body');
+    body.replaceChildren();
+    if (done) {
+      body.insertAdjacentHTML('afterbegin', `<div class="p-3">La categoría <strong>${dish.name}</strong> ha sido eliminada correctamente.</div>`);
+    } else {
+      body.insertAdjacentHTML(
+        'afterbegin',
+        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> La categoría <strong>${dish.name}</strong> no se ha podido borrar.</div>`,
+      );
+    }
+    messageModal.show();
+    const listener = (event) => {
+      if (done) {
+        const removeCategory = document.getElementById('remove-dish');
+        const button = removeCategory.querySelector(`button.btn[data-dish="${dish.name}"]`);
+        button.parentElement.parentElement.remove();
+      }
+    };
+    messageModalContainer.addEventListener('hidden.bs.modal', listener, { once: true });
+  }
+
   //Hasta aqui
 
   bindAllergenDishes(handler){
@@ -675,6 +746,12 @@ class ManagerView {
 
   bindShowRemoveCategory(handler){
     document.getElementById('btn-remove-cat').addEventListener('click', (event) => { 
+      handler();
+    });
+  }
+
+  bindShowRemoveDish(handler){
+    document.getElementById('btn-remove-dish').addEventListener('click', (event) => { 
       handler();
     });
   }

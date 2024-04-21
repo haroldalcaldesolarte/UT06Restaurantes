@@ -14,6 +14,7 @@ class ManagerController{
     this[VIEW].bindShowNewCategory(this.handleNewCategoryForm);
     this[VIEW].bindShowNewRestaurant(this.handleNewRestaurantForm);
     this[VIEW].bindShowRemoveCategory(this.handleRemoveCategoryForm);
+    this[VIEW].bindShowRemoveDish(this.handleRemoveDishForm);
     this[VIEW].showRestaurantsInMenu(this[MODEL].restaurants);
     this[VIEW].bindShowHideOptionRestaurants(this.handleShowOptionRestaurants);
     this[VIEW].bindShowRestaurant(this.handleShowRestaurant);
@@ -133,7 +134,6 @@ class ManagerController{
   };
 
   handleRemoveCategory = (category_name) => {
-    console.log(category_name);
     let done;
     let error;
     let category;
@@ -177,6 +177,28 @@ class ManagerController{
       error = exception;
     }
     this[VIEW].showNewDishModal(done, dish, error);
+  };
+
+  //Borrar plato
+  handleRemoveDishForm = () => {
+    this[VIEW].showRemoveDishForm(this[MODEL].dishes);
+    this[VIEW].bindRemoveDishForm(this.handleRemoveDish);
+  };
+
+  handleRemoveDish = (dish_name) => {
+    let done;
+    let error;
+    let dish;
+    try {
+      dish = this[MODEL].createDish(dish_name,'',[],'');
+      this[MODEL].removeDish(dish);
+      done = true;
+      //Actualizar las categorias
+    } catch (exception) {
+      done = false;
+      error = exception;
+    }
+    this[VIEW].showRemoveDishModal(done, dish, error);
   };
 
   //OnLoad
