@@ -1,3 +1,5 @@
+import { newDishValidation, newCategoryValidation } from './validation.js';
+
 class ManagerView {
   constructor(){
     this.main = document.getElementById('principal');
@@ -259,14 +261,94 @@ class ManagerView {
     this.aside.innerHTML = `<h5>Platos</h5><ul>${asideContent}</ul>`;
   }
 
-  showNewDishForm(categories, allergens){
+  //Formulario Categoria
+
+  showNewCategoryForm(){
     this.main.replaceChildren();
+    this.aside.replaceChildren();
+    this.main.style.width = '80%';
     this.aside.style.width = '20%';
 
     const container = document.createElement('div');
     container.classList.add('container');
     container.classList.add('my-3');
     container.id = 'new-category';
+
+    container.insertAdjacentHTML(
+      'afterbegin',
+      '<h1 class="display-5">Nueva Categoria</h1>',
+    );
+    container.insertAdjacentHTML(
+      'beforeend',
+      `<form name="fNewCategory" role="form" class="row g-3" novalidate>
+			<div class="col-md-12 mb-3">
+				<label class="form-label" for="ncNombre">Nombre *</label>
+				<div class="input-group">
+					<input type="text" class="form-control" id="ncNombre" name="ncNombre"
+						placeholder="Nombre de la categoria" value="" required>
+					<div class="invalid-feedback">El nombre es obligatorio.</div>
+					<div class="valid-feedback">Correcto.</div>
+				</div>
+			</div>
+			<div class="col-md-12 mb-3">
+				<label class="form-label" for="ncDescription">Descripción *</label>
+				<div class="input-group">
+					<input type="text" class="form-control" id="ncDescription" name="ncDescription" value="" required>
+					<div class="invalid-feedback">La descripción no es válida.</div>
+					<div class="valid-feedback">Correcto.</div>
+				</div>
+			</div>
+			<div class="mb-12">
+				<button class="btn btn-primary" type="submit">Enviar</button>
+				<button class="btn btn-danger" type="reset">Cancelar</button>
+			</div>
+		</form>`,
+    );
+
+    this.main.append(container);
+  }
+
+  bindNewCategoryForm(handler){
+    newCategoryValidation(handler);
+  }
+
+  showNewCategoryModal(done, cat, error) {
+    const messageModalContainer = document.getElementById('messageModal');
+    const messageModal = new bootstrap.Modal('#messageModal');
+
+    const title = document.getElementById('messageModalTitle');
+    title.innerHTML = 'Nueva Categoría';
+    const body = messageModalContainer.querySelector('.modal-body');
+    body.replaceChildren();
+    if (done) {
+      body.insertAdjacentHTML('afterbegin', `<div class="p-3">La categoría <strong>${cat.name}</strong> ha sido creada correctamente.</div>`);
+    } else {
+      body.insertAdjacentHTML(
+        'afterbegin',
+        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> La categoría <strong>${cat.name}</strong> ya está creada.</div>`,
+      );
+    }
+    messageModal.show();
+    const listener = (event) => {
+      if (done) {
+        document.fNewCategory.reset();
+      }
+      document.fNewCategory.ncNombre.focus();
+    };
+    messageModalContainer.addEventListener('hidden.bs.modal', listener, { once: true });
+  }
+
+  //Formulario Plato
+
+  showNewDishForm(categories, allergens){
+    this.main.replaceChildren();
+    this.aside.replaceChildren();
+    this.aside.style.width = '20%';
+
+    const container = document.createElement('div');
+    container.classList.add('container');
+    container.classList.add('my-3');
+    container.id = 'new-dish';
 
     container.insertAdjacentHTML(
       'afterbegin',
@@ -278,7 +360,7 @@ class ManagerView {
 			<div class="col-md-6 mb-3">
 				<label class="form-label" for="ncNombre">Nombre *</label>
 				<div class="input-group">
-					<input type="text" class="form-control" id="ncTitle" name="ncTitle"
+					<input type="text" class="form-control" id="ncNombre" name="ncNombre"
 						placeholder="Nombre del plato" value="" required>
 					<div class="invalid-feedback">El nombre es obligatorio.</div>
 					<div class="valid-feedback">Correcto.</div>
@@ -294,10 +376,10 @@ class ManagerView {
 				</div>
 			</div>
 			<div class="col-md-12 mb-3">
-				<label class="form-label" for="ncDescription">Descripción</label>
+				<label class="form-label" for="ncDescription">Descripción *</label>
 				<div class="input-group">
-					<input type="text" class="form-control" id="ncDescription" name="ncDescription" value="">
-					<div class="invalid-feedback"></div>
+					<input type="text" class="form-control" id="ncDescription" name="ncDescription" value="" required>
+					<div class="invalid-feedback">La descripción no es válida.</div>
 					<div class="valid-feedback">Correcto.</div>
 				</div>
 			</div>
@@ -313,7 +395,7 @@ class ManagerView {
       </div>
 			<div class="mb-12">
 				<button class="btn btn-primary" type="submit">Enviar</button>
-				<button class="btn btn-primary" type="reset">Cancelar</button>
+				<button class="btn btn-danger" type="reset">Cancelar</button>
 			</div>
 		</form>`,
     );
@@ -348,6 +430,10 @@ class ManagerView {
     this.main.append(container);
   }
 
+  bindNewDishForm(handler){
+    newDishValidation(handler);
+  }
+
   bindAllergenDishes(handler){
     document.getElementById('nav-alergenos').addEventListener('click', (event) => {
       handler();
@@ -380,6 +466,12 @@ class ManagerView {
 
   bindShowNewDish(handler){
     document.getElementById('btn-add-dish').addEventListener('click', (event) => { 
+      handler();
+    });
+  }
+
+  bindShowNewCategory(handler){
+    document.getElementById('btn-add-cat').addEventListener('click', (event) => { 
       handler();
     });
   }

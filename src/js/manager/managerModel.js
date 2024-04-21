@@ -65,10 +65,12 @@ const Manager = (function () {
     addCategory(...categories) {//se le puede pasar una categoria o varias
       for (const category of categories) {
         if (!category || !(category instanceof Category)) {
+          console.log('no es una cat');
           throw new Error('No es un objeto válido, es null o no es Category.');
         }
         
         if (this.#getCategoryPosition(category) !== -1) {
+          console.log('ya existe');
           throw new Error('La categoría ya existe.');
         }
         this.categories.push(category);

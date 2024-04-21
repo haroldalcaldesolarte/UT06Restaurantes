@@ -11,6 +11,7 @@ class ManagerController{
   onInit = () => {
     this[VIEW].init(this[MODEL].categories, this[MODEL].dishes);
     this[VIEW].bindShowNewDish(this.handleNewDishForm);
+    this[VIEW].bindShowNewCategory(this.handleNewCategoryForm);
     this[VIEW].showRestaurantsInMenu(this[MODEL].restaurants);
     this[VIEW].bindShowHideOptionRestaurants(this.handleShowOptionRestaurants);
     this[VIEW].bindShowRestaurant(this.handleShowRestaurant);
@@ -79,11 +80,52 @@ class ManagerController{
     this[VIEW].listDishesMenu(menu.dishes, menu.menu.name);
     this[VIEW].bindShowDish(this.handleShowDish);
   }
+  
+  handleNewCategoryForm = () => {
+    this[VIEW].showNewCategoryForm();
+    this[VIEW].bindNewCategoryForm(this.handleCreateCategory);
+  }
+
+  handleCreateCategory = (category_name, category_description) => {
+    let done;
+    let error;
+    let category;
+
+    try{
+      category = this[MODEL].createCategory(category_name,category_description);
+      console.log(category);
+      done = true;
+    }catch (exception) {
+      done = false;
+      error = exception;
+      console.log(exception);
+    }
+    this[VIEW].showNewCategoryModal(done, category, error);
+  }
 
   handleNewDishForm = () => {
     this[VIEW].showNewDishForm(this[MODEL].categories, this[MODEL].allergens);
-    //this[VIEW].bindNewDishCategoryForm(this.handleCreateDish);
+    this[VIEW].bindNewDishForm(this.handleCreateDish);
   }
+
+  handleCreateDish = (dish_name, url, description, categories, allergens) => {
+    let done;
+    let error;
+    let dish;
+
+    try{
+      dish = this[MODEL].createDish(dish_name,description,[],url);
+      thiS[MODEL].addDish(dish);
+      categories.forEach(category => {
+        const aux_category = this[MODEL].createCategory(category.name, category.description);
+        this[MODEL].assignCategoryToDish(dish, aux_category);
+      });
+      done = true;
+    }catch (exception) {
+      done = false;
+      error = exception;
+    }
+  };
 
   onLoad = (categories, allergens, dishes, menus, restaurants) => {
     //Añadir todos los elementos
