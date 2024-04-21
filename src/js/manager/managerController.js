@@ -15,6 +15,7 @@ class ManagerController{
     this[VIEW].bindShowNewRestaurant(this.handleNewRestaurantForm);
     this[VIEW].bindShowRemoveCategory(this.handleRemoveCategoryForm);
     this[VIEW].bindShowRemoveDish(this.handleRemoveDishForm);
+    this[VIEW].bindAssingDishToMenu(this.handleAssignDishToMenuForm);
     this[VIEW].showRestaurantsInMenu(this[MODEL].restaurants);
     this[VIEW].bindShowHideOptionRestaurants(this.handleShowOptionRestaurants);
     this[VIEW].bindShowRestaurant(this.handleShowRestaurant);
@@ -83,7 +84,8 @@ class ManagerController{
     this[VIEW].listDishesMenu(menu.dishes, menu.menu.name);
     this[VIEW].bindShowDish(this.handleShowDish);
   }
-  
+
+  //Crear categoria
   handleNewCategoryForm = () => {
     this[VIEW].showNewCategoryForm();
     this[VIEW].bindNewCategoryForm(this.handleCreateCategory);
@@ -104,6 +106,31 @@ class ManagerController{
     this[VIEW].showNewCategoryModal(done, category, error);
   }
 
+  //Asignacion de plato a menu
+  handleAssignDishToMenuForm = () => {
+    this[VIEW].showAssignDishToMenuForm(this[MODEL].dishes, this[MODEL].menus);
+    this[VIEW].bindAssignDishToMenu(this.handleAssignDishToMenu);
+  }
+
+  handleAssignDishToMenu = (dish_name, menu_name) => {
+    let done;
+    let error;
+    let dish;
+    let menu;
+
+    try{
+      dish = this[MODEL].createDish(dish_name,'',[],'');
+      menu = this[MODEL].createMenu(menu_name, '');
+      this[MODEL].assignDishToMenu(menu,dish);
+      done = true;
+    }catch (exception) {
+      done = false;
+      error = exception;
+    }
+    this[VIEW].showAssignDishToMenuModal(done, dish, menu, error);
+  }
+
+  //Crear restaurante
   handleNewRestaurantForm = () => {
     this[VIEW].showNewRestaurantForm();
     this[VIEW].bindNewRestaurantForm(this.handleCreateRestaurant);
