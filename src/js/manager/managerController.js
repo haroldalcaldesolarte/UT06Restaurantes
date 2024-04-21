@@ -13,6 +13,7 @@ class ManagerController{
     this[VIEW].bindShowNewDish(this.handleNewDishForm);
     this[VIEW].bindShowNewCategory(this.handleNewCategoryForm);
     this[VIEW].bindShowNewRestaurant(this.handleNewRestaurantForm);
+    this[VIEW].bindShowRemoveCategory(this.handleRemoveCategoryForm);
     this[VIEW].showRestaurantsInMenu(this[MODEL].restaurants);
     this[VIEW].bindShowHideOptionRestaurants(this.handleShowOptionRestaurants);
     this[VIEW].bindShowRestaurant(this.handleShowRestaurant);
@@ -124,6 +125,30 @@ class ManagerController{
     }
     this[VIEW].showNewRestaurantModal(done, restaurant, error);
   }
+
+  //Borrado Categoria
+  handleRemoveCategoryForm = () => {
+    this[VIEW].showRemoveCategoryForm(this[MODEL].categories);
+    this[VIEW].bindRemoveCategoryForm(this.handleRemoveCategory);
+  };
+
+  handleRemoveCategory = (category_name) => {
+    console.log(category_name);
+    let done;
+    let error;
+    let category;
+    try {
+      category = this[MODEL].createCategory(category_name); // meotodo que devuelve objeto categoria si ya esta creado
+      this[MODEL].removeCategory(category);
+      done = true;
+      //Actualizar las categorias
+    } catch (exception) {
+      done = false;
+      error = exception;
+    }
+    this[VIEW].showRemoveCategoryModal(done, category, error);
+  };
+  // Crear plato
 
   handleNewDishForm = () => {
     this[VIEW].showNewDishForm(this[MODEL].categories, this[MODEL].allergens);

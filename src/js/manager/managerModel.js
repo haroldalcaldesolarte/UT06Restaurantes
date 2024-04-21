@@ -575,7 +575,7 @@ const Manager = (function () {
       return newAllergen;
     }
 
-    createCategory(name,description){
+    createCategory(name = 'Anon',description = ''){
       let newCategory = this.categories.find(c => c.name === name); // comprobamos si ya existe una con el mismo nombre
       if (!newCategory) {
         newCategory = new Category(name,description);
