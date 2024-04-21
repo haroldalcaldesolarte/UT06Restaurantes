@@ -161,18 +161,25 @@ class ManagerController{
     let dish;
 
     try{
-      dish = this[MODEL].createDish(dish_name,description,[],url);
-      thiS[MODEL].addDish(dish);
+      dish = this[MODEL].createDish(dish_name,description,[],url); //No pedimos los ingredientes en el formulario se pasa array vaacio
       categories.forEach(category => {
-        const aux_category = this[MODEL].createCategory(category.name, category.description);
-        this[MODEL].assignCategoryToDish(dish, aux_category);
+        const aux_category = this[MODEL].createCategory(category);
+        this[MODEL].assignCategoryToDish(dish, aux_category); //asignar las categorias al plato
+      });
+
+      allergens.forEach(allergen => {
+        const aux_allergen = this[MODEL].createAllergen(allergen);
+        this[MODEL].assignAllergenToDish(dish, aux_allergen);
       });
       done = true;
     }catch (exception) {
       done = false;
       error = exception;
     }
+    this[VIEW].showNewDishModal(done, dish, error);
   };
+
+  //OnLoad
 
   onLoad = (categories, allergens, dishes, menus, restaurants) => {
     //Añadir todos los elementos

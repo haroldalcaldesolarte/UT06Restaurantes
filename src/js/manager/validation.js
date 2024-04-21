@@ -30,11 +30,12 @@ function newDishValidation(handler) {
     let isValid = true;
     let firstInvalidElement = null;
 
-    this.ncNombre.value = this.ncNombre.value.trim();
-    if (this.ncNombre.value.length > 0) {
-      showFeedBack(this.ncNombre, true);
-    }else{
-      showFeedBack(this.ncNombre, false);
+    if (!this.ncDescription.checkValidity()) {
+      isValid = false;
+      showFeedBack(this.ncDescription, false);
+      firstInvalidElement = this.ncDescription;
+    } else {
+      showFeedBack(this.ncDescription, true);
     }
 
     if (!this.ncUrl.checkValidity()) {
@@ -45,26 +46,57 @@ function newDishValidation(handler) {
       showFeedBack(this.ncUrl, true);
     }
 
+    if (!this.ncNombre.checkValidity()) {
+      isValid = false;
+      showFeedBack(this.ncNombre, false);
+      firstInvalidElement = this.ncNombre;
+    } else {
+      showFeedBack(this.ncNombre, true);
+    }
+
     if (!isValid) {
       firstInvalidElement.focus();
     } else {
-      handler(this.ncTitle.value, this.ncUrl.value, this.ncDescription.value);
+      //Obtener arrays con los nombres de las categorias y alergenos ?
+      let CategoriesChecked = getCategoriesChecked();
+      let AllergensChecked = getAllergensChecked();
+      handler(this.ncNombre.value, this.ncUrl.value, this.ncDescription.value, CategoriesChecked, AllergensChecked);
     }
     event.preventDefault();
     event.stopPropagation();
   });
 
-  form.addEventListener('reset', (function (event) {
-    for (const div of this.querySelectorAll('div.valid-feedback, div.invalid-feedback')) {
-      div.classList.remove('d-block');
-      div.classList.add('d-none');
+  form.ncNombre.addEventListener('change', defaultCheckElement);
+  form.ncUrl.addEventListener('change', defaultCheckElement);
+  form.ncDescription.addEventListener('change', defaultCheckElement);
+}
+
+function getCategoriesChecked(){
+  const categoriesDiv = document.getElementById('categories-checkboxes');
+  const checkboxes = categoriesDiv.querySelectorAll('input[type="checkbox"][name="categories"]');
+
+  let opcionesMarcadas = [];
+
+  checkboxes.forEach(checkbox => {
+    if (checkbox.checked) {
+      opcionesMarcadas.push(checkbox.value);
     }
-    for (const input of this.querySelectorAll('input')) {
-      input.classList.remove('is-valid');
-      input.classList.remove('is-invalid');
+  });
+  return opcionesMarcadas;
+}
+
+function getAllergensChecked(){
+  const categoriesDiv = document.getElementById('allergens-checkboxes');
+  const checkboxes = categoriesDiv.querySelectorAll('input[type="checkbox"][name="allergens"]');
+
+  let opcionesMarcadas = [];
+
+  checkboxes.forEach(checkbox => {
+    if (checkbox.checked) {
+      opcionesMarcadas.push(checkbox.value);
     }
-    this.ncNombre.focus();
-  }));
+  });
+  return opcionesMarcadas;
 }
 
 function newCategoryValidation(handler){

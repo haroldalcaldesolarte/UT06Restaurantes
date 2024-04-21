@@ -597,6 +597,34 @@ class ManagerView {
     newDishValidation(handler);
   }
 
+  showNewDishModal(done, dish, error){
+    const messageModalContainer = document.getElementById('messageModal');
+    const messageModal = new bootstrap.Modal('#messageModal');
+
+    const title = document.getElementById('messageModalTitle');
+    title.innerHTML = 'Nuevo Plato';
+    const body = messageModalContainer.querySelector('.modal-body');
+    body.replaceChildren();
+    if (done) {
+      body.insertAdjacentHTML('afterbegin', `<div class="p-3">El plato <strong>${dish.name}</strong> ha sido creada correctamente.</div>`);
+    } else {
+      body.insertAdjacentHTML(
+        'afterbegin',
+        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> El plato <strong>${dish.name}</strong> ya está creado.</div>`,
+      );
+    }
+    messageModal.show();
+    const listener = (event) => {
+      if (done) {
+        document.fNewDish.reset();
+      }
+      document.fNewDish.ncNombre.focus();
+    };
+    messageModalContainer.addEventListener('hidden.bs.modal', listener, { once: true });
+  }
+
+  //Hasta aqui
+
   bindAllergenDishes(handler){
     document.getElementById('nav-alergenos').addEventListener('click', (event) => {
       handler();
