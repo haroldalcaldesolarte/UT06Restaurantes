@@ -14,6 +14,7 @@ class ManagerController{
     this[VIEW].bindShowNewCategory(this.handleNewCategoryForm);
     this[VIEW].bindShowNewRestaurant(this.handleNewRestaurantForm);
     this[VIEW].bindShowRemoveCategory(this.handleRemoveCategoryForm);
+    this[VIEW].bindEditDish(this.handleEditDishForm);
     this[VIEW].bindShowRemoveDish(this.handleRemoveDishForm);
     this[VIEW].bindAssingDishToMenu(this.handleAssignDishToMenuForm);
     this[VIEW].bindUnassingDishToMenu(this.handleUnassignDishToMenuForm);
@@ -200,6 +201,47 @@ class ManagerController{
     }
     this[VIEW].showRemoveCategoryModal(done, category, error);
   };
+
+  //Editar Plato
+  handleEditDishForm = () => {
+    this[VIEW].showEditDishForm(this[MODEL].dishes);
+    this[VIEW].bindEditDishForm(this.handleEditDish);
+  }
+
+  handleEditDish = (dish_name) => {
+    let dish;
+    let currentDishCategories;
+    let positionDish;
+
+    positionDish = this[MODEL].dishes.findIndex((element) => element.dish.name === dish_name);
+    dish = this[MODEL].dishes[positionDish];
+    currentDishCategories = dish.categories;
+    console.log(currentDishCategories);
+    this[VIEW].ModifyCategoriesInDish(dish, currentDishCategories, this[MODEL].categories);
+    //Inmediatamente hacer la funcion para el btn de editar de la pantalla
+    this[VIEW].bindModifyCategoriesInDish(this.handleModifyCategoriesInDish);
+  }
+
+  handleModifyCategoriesInDish = (dish_name, categories) => {
+    let done;
+    let error;
+    let dish;
+    try {
+      dish = this[MODEL].createDish(dish_name,'',[],'');
+      categories.forEach(category => {
+        const aux_category = this[MODEL].createCategory(category);
+        this[MODEL].assignCategoryToDish(dish, aux_category); //asignar las categorias al plato
+      });
+      //Faltaria el proceso contrario que es desasignar las que se han desmarcado serian las categorias totales menos las seleccionadas
+      done = true;
+    } catch (exception) { //en el modelo en el metodo assignCategoryToDish salta una excepcion si ya esta añadido, no controlo esto por eso
+      //pongo el done a true aqui en el catch
+      done = true;
+      error = exception;
+    }
+    this[VIEW].showModifyCategoriesInDishModal(done, dish, error);
+  } 
+
   // Crear plato
 
   handleNewDishForm = () => {

@@ -409,6 +409,148 @@ class ManagerView {
     messageModalContainer.addEventListener('hidden.bs.modal', listener, { once: true });
   }
 
+  //Formulario para editar plato
+  showEditDishForm(dishes){
+    this.main.replaceChildren();
+    this.aside.replaceChildren();
+    this.main.style.width = '80%';
+    this.aside.style.width = '20%';
+    
+    if (this.main.children.length > 1) this.main.children[1].remove();
+
+    const container = document.createElement('div');
+    container.classList.add('container');
+    container.classList.add('my-3');
+    container.id = 'edit-dishes';
+    container.insertAdjacentHTML(
+      'afterbegin',
+      '<h1 class="display-5">Editar un plato</h1>',
+    );
+
+    const row = document.createElement('div');
+    row.classList.add('row');
+
+    for (const dish of dishes) {
+      row.insertAdjacentHTML('beforeend', `<div class="col-lg-3 col-md-6">
+        <div class="cat-list-text">
+          <a data-category="${dish.dish.name}" href="#category-list"><h3>${dish.dish.name}</h3></a>
+          <div>${dish.dish.description}</div>
+        </div>
+        <div><button class="btn btn-warning" data-dish="${dish.dish.name}" type='button'>Editar</button></div>
+    </div>`);
+    }
+    container.append(row);
+    this.main.append(container);
+  }
+
+  bindEditDishForm(handler){
+    const EditContainer = document.getElementById('edit-dishes');
+    const buttons = EditContainer.getElementsByTagName('button');
+    for (const button of buttons) {
+      button.addEventListener('click', function (event) {
+      	handler(this.dataset.dish);
+    	});
+    }
+  }
+
+  ModifyCategoriesInDish(dish, currentCategories, categories){
+    this.main.replaceChildren();
+    this.aside.replaceChildren();
+    this.main.style.width = '80%';
+    this.aside.style.width = '20%';
+    
+    if (this.main.children.length > 1) this.main.children[1].remove();
+
+    const container = document.createElement('div');
+    container.classList.add('container');
+    container.classList.add('my-3');
+    container.id = 'edit-dish';
+    container.insertAdjacentHTML(
+      'afterbegin',
+      `<h5 class="display-5">Modificando categorias del plato ${dish.dish.name} </h5>`
+    );
+
+    container.insertAdjacentHTML(
+      'beforeend',
+      `<form name="fEditDish" role="form" class="row g-3" novalidate>
+      <div class="col-md-12 mb-3"></div>
+      <div class="col-md-12 mb-3">
+        <label class="form-label" for="ncCategorias">Categorias</label>
+        <div id="categories-checkboxes">
+        </div>
+      </div>
+			<div class="mb-12">
+				<button class="btn btn-warning" data-dish="${dish.dish.name}" type="submit">Actualizar</button>
+			</div>
+		</form>`,
+    );
+
+    const categoriesCheckboxesContainer = container.querySelector('#categories-checkboxes');
+
+    categories.forEach(category => {
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.name = 'categories';
+      checkbox.value = category.name;
+      checkbox.id = category.name;
+      if (currentCategories.includes(category)) {
+          checkbox.checked = true;
+      }
+
+      const label = document.createElement('label');
+      label.textContent = category.name;
+      label.setAttribute('for', `category-${category.name}`);
+
+      categoriesCheckboxesContainer.appendChild(checkbox);
+      categoriesCheckboxesContainer.appendChild(label);
+      categoriesCheckboxesContainer.appendChild(document.createElement('br'));
+    });
+
+    this.main.append(container);
+  }
+
+  bindModifyCategoriesInDish(handler){
+    const form = document.forms['fEditDish'];
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const dish_name = form.querySelector('button[type="submit"]').dataset.dish;
+      const selectedCategories = [];
+      const checkboxCategories = form.elements['categories'];
+      checkboxCategories.forEach(checkbox => {
+        if (checkbox.checked) {
+          selectedCategories.push(checkbox.value);
+        }
+      });
+      handler(dish_name,selectedCategories);
+    });
+  }
+
+  showModifyCategoriesInDishModal(done, dish, error){
+    const messageModalContainer = document.getElementById('messageModal');
+    const messageModal = new bootstrap.Modal('#messageModal');
+
+    const title = document.getElementById('messageModalTitle');
+    title.innerHTML = 'Nuevo Plato';
+    const body = messageModalContainer.querySelector('.modal-body');
+    body.replaceChildren();
+    if (done) {
+      body.insertAdjacentHTML('afterbegin', `<div class="p-3">El plato <strong>${dish.name}</strong> ha sido actualizado correctamente.</div>`);
+    } else {
+      body.insertAdjacentHTML(
+        'afterbegin',
+        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> El plato <strong>${dish.name}</strong> no se ha actualizado correctamente.</div>`,
+      );
+    }
+    messageModal.show();
+    const listener = (event) => {
+      if (done) {
+        document.fEditDish.reset();
+      }
+    };
+    messageModalContainer.addEventListener('hidden.bs.modal', listener, { once: true });
+  }
+
   //Formulario restaurante
   showNewRestaurantForm(){
     this.main.replaceChildren();
@@ -950,6 +1092,12 @@ class ManagerView {
 
   bindUnassingDishToMenu(handler){
     document.getElementById('btn-remove-dish-to-menu').addEventListener('click', (event) => { 
+      handler();
+    });
+  }
+
+  bindEditDish(handler){
+    document.getElementById('btn-edit-dish').addEventListener('click', (event) => { 
       handler();
     });
   }
