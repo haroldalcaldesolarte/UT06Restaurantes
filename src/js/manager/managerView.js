@@ -740,7 +740,7 @@ class ManagerView {
 				</div>
       </div>
 			<div class="mb-12">
-				<button class="btn btn-primary" type="submit">Enviar</button>
+				<button class="btn btn-primary" type="submit">Asignar</button>
 			</div>`,
     );
 
@@ -785,7 +785,99 @@ class ManagerView {
       );
     }
     messageModal.show();
-    messageModalContainer.addEventListener('hidden.bs.modal', listener, { once: true });
+  }
+
+  //Desasingar plato al menu
+
+  showUnassignDishToMenuForm(dishes, menus){
+    this.main.replaceChildren();
+    this.aside.replaceChildren();
+    this.main.style.width = '80%';
+    this.aside.style.width = '20%';
+    if (this.main.children.length > 1) this.main.children[1].remove();
+
+  	const container = document.createElement('div');
+  	container.classList.add('container');
+  	container.classList.add('my-3');
+  	container.id = 'unassing-dish-to-menu';
+
+    container.insertAdjacentHTML(
+      'afterbegin',
+      `<h1 class="display-5">Desasignar Plato al menu</h1>
+			`,
+    );
+
+    const form = document.createElement('form');
+    form.name = 'fUnassignDishToMenu';
+    form.setAttribute('role', 'form');
+    form.setAttribute('novalidate', '');
+    form.classList.add('row');
+    form.classList.add('g-3');
+
+    form.insertAdjacentHTML(
+      'beforeend',
+      `<div class="col-md-12 mb-3"></div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label" for="ncDishes">Platos</label>
+				<div class="input-group">
+					<select class="form-select" name="rpDishes" id="rpDishes">
+					</select>
+				</div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label" for="ncMenus">Menus</label>
+        <div class="input-group">
+					<select class="form-select" name="rpMenus" id="rpMenus">
+					</select>
+				</div>
+      </div>
+			<div class="mb-12">
+				<button id='btn-unassign' class="btn btn-primary" type="submit">Desasignar</button>
+			</div>`,
+    );
+
+    const rpDishes = form.querySelector('#rpDishes');
+    for (const dish of dishes) {
+      rpDishes.insertAdjacentHTML('beforeend', `<option value="${dish.dish.name}">${dish.dish.name}</option>`);
+    }
+
+    const rpMenus = form.querySelector('#rpMenus');
+    for (const menu of menus) {
+      rpMenus.insertAdjacentHTML('beforeend', `<option value="${menu.menu.name}">${menu.menu.name}</option>`);
+    }
+    container.append(form);
+    this.main.append(container);
+  }
+
+  bindUnassignDishToMenu(handler){
+    const form = document.forms['fUnassignDishToMenu'];
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const selectedDish = form.elements['rpDishes'].value;
+      const selectedMenu = form.elements['rpMenus'].value;
+      handler(selectedDish, selectedMenu);
+    });
+  }
+
+  showUnassignDishToMenuModal(done, dish, menu, error){
+    const messageModalContainer = document.getElementById('messageModal');
+    const messageModal = new bootstrap.Modal('#messageModal');
+
+    const title = document.getElementById('messageModalTitle');
+    title.innerHTML = 'Nueva desasignación';
+    const body = messageModalContainer.querySelector('.modal-body');
+    body.replaceChildren();
+    if (done) {
+      body.insertAdjacentHTML('afterbegin', `<div class="p-3">El plato <strong>${dish.name}</strong> ha sido desasignado correctamente del menu <strong>${menu.name}</strong> .</div>`);
+    } else {
+      body.insertAdjacentHTML(
+        'afterbegin',
+        `<div class="error text-danger p-3"><i class="bi bi-exclamation-triangle"></i> El plato <strong>${dish.name}</strong> no existe en el menu <strong>${menu.name}</strong> .</div>`,
+      );
+    }
+    messageModal.show();
   }
 
   //Hasta aqui
@@ -852,6 +944,12 @@ class ManagerView {
 
   bindAssingDishToMenu(handler){
     document.getElementById('btn-add-dish-to-menu').addEventListener('click', (event) => { 
+      handler();
+    });
+  }
+
+  bindUnassingDishToMenu(handler){
+    document.getElementById('btn-remove-dish-to-menu').addEventListener('click', (event) => { 
       handler();
     });
   }
