@@ -229,14 +229,16 @@ class ManagerController{
     try {
       dish = this[MODEL].createDish(dish_name,'',[],'');
       categories.forEach(category => {
-        const aux_category = this[MODEL].createCategory(category);
-        this[MODEL].assignCategoryToDish(dish, aux_category); //asignar las categorias al plato
+        try {
+          const aux_category = this[MODEL].createCategory(category);
+          this[MODEL].assignCategoryToDish(dish, aux_category); //asignar las categorias al plato
+        } catch (exception) { // controlamos aqui para que no la capture el otro catch asi no tenemos problema de asignar una categoria ya asignada
+          console.log(`La categoría "${category}" ya está asignada al plato.`);
+        }
       });
-      //Faltaria el proceso contrario que es desasignar las que se han desmarcado serian las categorias totales menos las seleccionadas
       done = true;
-    } catch (exception) { //en el modelo en el metodo assignCategoryToDish salta una excepcion si ya esta añadido, no controlo esto por eso
-      //pongo el done a true aqui en el catch
-      done = true;
+    } catch (exception) {
+      done = false;
       error = exception;
     }
     this[VIEW].showModifyCategoriesInDishModal(done, dish, error);
